@@ -1,0 +1,30 @@
+{
+  "port": 3002,
+  "pinHash": null,
+  "tls": false,
+  "debug": false,
+  "keepAwake": true,
+  "dangerouslySkipPermissions": true,
+  "projects": [
+    {
+      "path": "/workspace/ubuntu",
+      "slug": "ubuntu",
+      "addedAt": 1772392647820
+    },
+    {
+      "path": "/workspace/projects",
+      "slug": "projects",
+      "addedAt": 1772392666946
+    },
+    {
+      "path": "/workspace/hscheema1979",
+      "slug": "hscheema1979",
+      "addedAt": 1773085904990
+    },
+    {
+      "path": "/workspace/myhealthteam",
+      "slug": "myhealthteam",
+      "addedAt": 1772693011121
+    }
+  ]
+}
