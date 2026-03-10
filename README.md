@@ -25,52 +25,21 @@ Get approval notifications while grabbing a coffee.
 Continue working from the sofa on your iPad.
 Split your browser: claude-relay on one side, your app preview on the other, and watch the code change in real time.
 
+## Quick Start (PM2 - Recommended)
+
 ```bash
-cd ~/your-project
-npx claude-relay
-# First run: Set Port/PIN -> Scan QR -> Connect
+# Clone and setup
+cd /home/ubuntu/hscheema1979/ultra-chat
+./start-with-pm2.sh
 ```
+
+**Access**: http://localhost:3002 (PIN: `000000`)
+
+⚠️ **Default Configuration**: Dangerously skip permissions enabled (auto-approve all tools)
 
 ---
 
-## Never Miss an Approval
-
-When Claude Code requests permission before executing a tool, you get a notification on your phone.
-One tap, and Claude Code gets back to work.
-
-<p align="center">
-  <img src="media/push-notification.jpg" alt="push notification" width="300">
-</p>
-
-It works in browser tabs too. When input is awaited, the favicon blinks and the tab title changes to alert you.
-
-## Side by Side Workflow
-
-<p align="center">
-  <img src="media/split.gif" alt="split-screen workflow" width="700">
-</p>
-
-Keep claude-relay on one side and your localhost on the other.
-Watch the results update live while Claude Code fixes your source files.
-
-Mermaid diagrams render as diagrams, and tables appear as actual tables.
-You can explore files in the sidebar and use the built-in terminal to run shell commands.
-
-## All in One Place
-
-Run `npx claude-relay` in each project to register them to the same server.
-Manage all your active sessions from a single dashboard.
-
-```bash
-cd ~/projects/backend && npx claude-relay    # Register project
-cd ~/projects/frontend && npx claude-relay   # Adds to the same server
-```
-
-The server runs in the background. Even if you close the terminal window, your sessions and the server remain active.
-
----
-
-## Getting Started
+## Getting Started (Manual)
 
 ```bash
 npx claude-relay
@@ -83,6 +52,68 @@ npx claude-relay
 On the first run, you'll set a port and PIN to launch the server.
 Scan the QR code with your phone to connect instantly, or open the URL displayed in your terminal.
 
+## Deployment Options
+
+### Option 1: PM2 (Production - Default)
+
+```bash
+cd /home/ubuntu/hscheema1979/ultra-chat
+pm2 start ecosystem.config.cjs
+pm2 save
+pm2 startup  # Auto-start on system boot
+```
+
+**Configuration**: `ecosystem.config.cjs`
+- ✅ **Dangerously skip permissions**: Enabled by default
+- ✅ **Auto-restart**: On failure
+- ✅ **Auto-start**: On system boot
+- ✅ **Log management**: Separate error and output logs
+
+### Option 2: Docker
+
+```bash
+cd /home/ubuntu/hscheema1979/ultra-chat
+docker-compose up -d
+```
+
+See [DOCKER.md](DOCKER.md) for details.
+
+### Option 3: Direct Node
+
+```bash
+cd /home/ubuntu/hscheema1979/ultra-chat
+node bin/cli.js --port 3002 --headless --pin 000000 --dangerously-skip-permissions
+```
+
+## Configuration
+
+### Default Settings
+
+The relay comes pre-configured with these defaults:
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| **Port** | 3002 | Web UI port |
+| **PIN** | 000000 | Simple PIN for easy access |
+| **Permissions** | Skipped | Auto-approve all tools (⚠️ use only in trusted environments) |
+| **Mode** | Headless | No interactive prompts |
+| **Projects** | 4 | ubuntu, projects, myhealthteam, hscheema1979 |
+
+### Customizing Permissions
+
+**⚠️ SECURITY WARNING**: Dangerously skip permissions means Claude Code will execute commands, edit files, and perform operations WITHOUT asking for approval. Only use this in:
+- Private networks
+- Trusted environments
+- Development/Testing scenarios
+
+**To enable permission prompts**, modify `ecosystem.config.cjs`:
+
+```javascript
+args: '--port 3002 --headless --pin 000000'  // Remove --dangerously-skip-permissions
+```
+
+Or for Docker, remove the environment variable from `docker-compose.yml`.
+
 ## Key Features
 
 * **Push Approvals** - Approve or reject from your phone while away, so Claude Code does not get stuck waiting.
@@ -91,190 +122,66 @@ Scan the QR code with your phone to connect instantly, or open the URL displayed
 * **Session Search** - Full-text search across all session messages with hit timeline.
 * **Auto Session Logs (JSONL)** - Conversations and execution history are always saved locally. No data loss on crashes or restarts. Location: `./.claude-relay/sessions/`
 * **File Browser and Terminal** - Inspect files, execute commands, and manage multiple terminal tabs from the browser.
+* **⚠️ Skip Permissions** - Auto-approve all tools for uninterrupted automation (default in this deployment).
 
 > Note: Session logs may contain prompts, outputs, and commands. Do not share this folder.
+> Note: Skip permissions mode is enabled by default. Ensure this is only used in trusted environments.
 
-<details>
-<summary>View Full Feature List</summary>
+## Accessing the WebUI
 
-**Notifications**
+Once started, access the relay at:
 
-* **Push Notifications** - Approvals, completions, errors, and questions. Add to Home Screen (PWA) to receive notifications without opening the app. Behavior depends on OS and browser. Tested on iPhone (Home Screen PWA) and desktop Chrome.
-* **Favicon and Title Blinking** - Visual cues when input is awaited.
-* **Sound Alerts** - Supports browser notifications, desktop notifications, and audio alerts.
+- **Local**: http://localhost:3002
+- **Network**: http://YOUR-SERVER-IP:3002
+- **PIN**: `000000`
 
-**Projects and Sessions**
+## Project Management
 
-* **Multi Project** - Single port management for all projects. Add and remove projects from the browser with path autocomplete.
-* **Project Names** - Custom names make it easy to distinguish tabs.
-* **Session Persistence** - Sessions survive server restarts, browser crashes, and network drops.
-* **Session Handoff** - Start in the terminal, continue on your phone, pass back to desktop. Browse and resume CLI sessions directly from the web UI.
-* **Session Search** - Full-text search across all session content with highlighted results and a rewind-style hit timeline.
-* **Rewind (Native Claude Code)** - Accessible directly from the browser UI.
-* **Draft Persistence** - Unsent messages are saved per session and restored when you switch back.
+The relay comes pre-configured with these projects:
 
-**Rendering and Tools**
+1. **ubuntu** → `/home/ubuntu` (default workspace)
+2. **projects** → `/home/ubuntu/projects`
+3. **myhealthteam** → `/home/ubuntu/hscheema1979/myhealthteam`
+4. **hscheema1979** → `/home/ubuntu/hscheema1979`
 
-* **Mermaid and Markdown** - Proper rendering for diagrams, tables, and code blocks.
-* **Syntax Highlighting** - Support for over 180 languages with copy buttons on every block.
-* **File Browser** - Sidebar navigation with file previews, markdown rendering, and live-reload on external changes.
-* **Built in Terminal** - Multi-tab terminal sessions with rename, reorder, and a mobile special-key toolbar.
-* **Slash Commands** - Execute standard Claude Code commands from the browser, with autocomplete.
-* **Usage Panel** - View token counts and rate limit progress bars via `/usage` command or header button.
-* **Model Switching** - Change the active model directly from the browser header.
-* **Plan Approval** - Review and approve Claude implementation plans from the browser UI.
+To add more projects, use the "Add project" button in the webUI.
 
-**UI**
+## Troubleshooting
 
-* **Mobile Optimized** - Large approve and reject buttons. Behaves like a native app via PWA.
-* **Real time Sync** - All devices view the exact same session state.
-* **QR Code** - Scan to connect instantly.
-* **Image Paste and Camera** - Paste images from clipboard or attach photos directly from your camera.
-* **Send While Processing** - Queue messages without waiting for the current response to finish.
-* **Sticky Todo Overlay** - TodoWrite tasks float as a progress bar while you scroll through the conversation.
-* **Scroll Position Hold** - Reading earlier messages will not get interrupted by new content arriving.
-* **RTL Text Support** - Automatic bidirectional text rendering for Arabic, Hebrew, and other RTL languages.
+### Relay shows "Connecting..."
 
-**Server and Security**
-
-* **Background Daemon** - Server persists even if the CLI is closed.
-* **Keep Awake** - Prevents macOS sleep to keep sessions alive. Configurable toggle.
-* **PIN Protection** - Restrict access with a 6 digit PIN.
-* **HTTPS** - Automatic certificate generation via mkcert.
-* **Zero Config** - Inherits your existing Claude Code configuration.
-
-</details>
-
-## Network
-
-On the same Wi Fi, it just works. Open the URL shown in the terminal on any device.
-
-For remote access, [Tailscale](https://tailscale.com) is recommended. Install it on both devices and log in with the same account to connect via an encrypted tunnel without port forwarding. Free for personal use.
-
-## Security
-
-claude-relay opens on your local network to allow access from other devices such as phones and tablets on the same Wi Fi.
-Setting a PIN is highly recommended.
-
-Anyone on your network with the URL and PIN can access the session. PIN protection can be enabled during the initial setup.
-
-Do not expose this directly to the public internet. Usage on public or shared networks is not recommended.
-For remote access, use [Tailscale](https://tailscale.com) or a VPN.
-
-Users are responsible for their network configuration and exposure scope.
-
-## HTTPS for Push
-
-Basic features work out of the box. Only push notifications require HTTPS.
-
-Set it up once using [mkcert](https://github.com/FiloSottile/mkcert):
+The relay automatically spawns Claude Code backends when needed. If it stays in "Connecting..." state:
 
 ```bash
-brew install mkcert
-mkcert -install
+# Check relay logs
+pm2 logs ultra-chat-relay --lines 50
+
+# Check if Claude processes are running
+ps aux | grep claude
+
+# Restart the relay
+pm2 restart ultra-chat-relay
 ```
 
-Certificates are generated automatically. The setup wizard handles the rest.
-
-If push registration fails: check whether your browser trusts HTTPS and whether your phone can access the address.
-
-## CLI Options
+### Port already in use
 
 ```bash
-npx claude-relay              # Default (port 2633)
-npx claude-relay -p 8080      # Specify port
-npx claude-relay --yes        # Skip interactive prompts (accept defaults)
-npx claude-relay -y --pin 123456
-                              # Non-interactive with PIN (for scripts/CI)
-npx claude-relay --no-https   # Disable HTTPS
-npx claude-relay --no-update  # Skip update check
-npx claude-relay --debug      # Enable debug panel
-npx claude-relay --add .      # Add current directory to running daemon
-npx claude-relay --add /path  # Add a project by path
-npx claude-relay --remove .   # Remove a project
-npx claude-relay --list       # List registered projects
-npx claude-relay --shutdown   # Stop the running daemon
-npx claude-relay --dangerously-skip-permissions
-                              # Bypass all permission prompts (PIN required during setup)
-npx claude-relay --dev        # Development mode (foreground, auto-restart on lib/ changes, port 2635)
+# Find what's using port 3002
+lsof -i :3002
+
+# Kill the process
+kill -9 <PID>
 ```
 
-## Requirements
+### Messages not sending
 
-* [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed and authenticated
-* Node.js 18+
-* [mkcert](https://github.com/FiloSottile/mkcert) - For push notifications (optional)
-* [Tailscale](https://tailscale.com) - For remote access (optional)
+1. Check if you're inside a Claude Code session (nested sessions not allowed)
+2. Ensure relay is running: `pm2 status`
+3. Check logs: `pm2 logs ultra-chat-relay`
 
-## Why claude-relay?
+## Development
 
-**Why not just use tmux + Termius?**
-You can monitor the terminal remotely, but there are no push notifications and no way to approve permission requests without switching back to the terminal. On a phone, navigating a raw terminal session is clunky. You end up checking manually instead of getting notified, and the experience never feels native.
-
-**Why not just add hooks to send notifications?**
-Hooks with ntfy or Pushover can get you push notifications, but you still need shell scripts, config files, and third-party accounts just to get alerts. And once you get the notification, there is no UI to approve or reject from. You are back to opening a terminal. claude-relay gives you notifications, a one-tap approval UI, and a full web interface with a single command.
-
-**Why not use Claude Code Desktop?**
-The desktop app works great on your computer, but there is no mobile version. To access sessions from your phone, you need remote sessions on Anthropic's cloud, which requires pushing your code to GitHub first. claude-relay runs entirely on your machine and lets you connect from any device on your network.
-
-**Why not use Happy Coder?**
-Happy Coder requires installing a native app and routes through its own relay server with end-to-end encryption. claude-relay *is* the relay server, running on your machine. Open a URL and you are in. No app install, no signup, nothing leaves your network.
-
-## Architecture
-
-claude-relay is not a wrapper that intercepts standard input/output.
-It is a local relay server that drives Claude Code execution via the [Claude Agent SDK](https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk) and streams data to the browser via WebSocket.
-
-```mermaid
-graph LR
-    Browser["Browser<br/>(Phone / Desktop)"]
-    WS["WebSocket"]
-    Server["HTTP Server<br/>lib/server.js"]
-    Project["Project Context<br/>lib/project.js"]
-    SDK["Claude Agent SDK"]
-    Claude["Claude Code<br/>Process"]
-    Push["Push Service"]
-
-    Browser <-->|Real time stream| WS
-    WS <--> Server
-    Server -->|slug routing| Project
-    Project <-->|async iterable| SDK
-    SDK <-->|Prompt / Response| Claude
-    Project -->|Approval request| Push
-    Push -->|Notification| Browser
-```
-
-For a detailed sequence diagram, daemon structure, and design decisions, refer to [docs/architecture.md](docs/architecture.md).
-
-## Star History
-
-<a href="https://star-history.com/#chadbyte/claude-relay&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=chadbyte/claude-relay&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=chadbyte/claude-relay&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=chadbyte/claude-relay&type=Date" width="600" />
- </picture>
-</a>
-
----
-
-## Contributors
-
-<a href="https://github.com/chadbyte/claude-relay/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=chadbyte/claude-relay" />
-</a>
-
-## Contributing
-
-Bug fixes and typos are welcome. For feature suggestions, please open an issue first:
-[https://github.com/chadbyte/claude-relay/issues](https://github.com/chadbyte/claude-relay/issues)
-
-If you are using claude-relay, let us know how you are using it in Discussions:
-[https://github.com/chadbyte/claude-relay/discussions](https://github.com/chadbyte/claude-relay/discussions)
-
-## Disclaimer
-
-This is an independent project and is not affiliated with Anthropic. Claude is a trademark of Anthropic.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup.
 
 ## License
 

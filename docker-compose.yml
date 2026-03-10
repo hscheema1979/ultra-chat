@@ -24,6 +24,9 @@ services:
       - CLAUDE_RELAY_HOME=/data/.claude-relay
       - CLAUDECODE=
       - NODE_ENV=production
+      - RELAY_PORT=3002
+      - RELAY_PIN=000000
+      - RELAY_DANGEROUSLY_SKIP_PERMISSIONS=true
 
     networks:
       - ultra-chat-network
