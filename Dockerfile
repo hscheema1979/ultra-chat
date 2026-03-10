@@ -19,5 +19,5 @@ ENV NODE_ENV=production
 # Expose port
 EXPOSE 3002
 
-# Start relay
-CMD ["node", "lib/daemon.js"]
+# Start relay with default configuration
+CMD ["node", "bin/cli.js", "--port", "3002", "--headless", "--pin", "000000", "--dangerously-skip-permissions"]

@@ -20,6 +20,8 @@ services:
       # Mount relay code for development (optional, comment out for production)
       - ./:/relay:ro
 
+    command: ["node", "bin/cli.js", "--port", "3002", "--headless", "--pin", "000000", "--dangerously-skip-permissions"]
+
     environment:
       - CLAUDE_RELAY_HOME=/data/.claude-relay
       - CLAUDECODE=
